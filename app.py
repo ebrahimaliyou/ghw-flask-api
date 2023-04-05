@@ -21,6 +21,7 @@ def data():
     # content_type = request.headers.get('Content-Type')
     if request.method == 'POST':
         dataCollection["new data"] = request.json
+        dataCollection.append()
         return dataCollection
     else:
         return dataCollection
