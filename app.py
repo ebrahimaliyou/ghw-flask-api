@@ -1,31 +1,14 @@
 import json
 from flask import Flask, request
-
-app = Flask(__name__)
-
-dataCollection = {
-    "data1": {
-        "name": "sudo",
-        "email": "sudo@sudox.com"
-    }
-}
+from api.routes.routes import routes
 
 
-@app.route("/")
-def hello_world():
-    return "<h1>sudo user x </h1>"
 
-
-@app.route("/data", methods=['GET', 'POST'])
-def data():
-    # content_type = request.headers.get('Content-Type')
-    if request.method == 'POST':
-        dataCollection["new data"] = request.json
-        dataCollection.append()
-        return dataCollection
-    else:
-        return dataCollection
-
+def create_app():
+    app = Flask(__name__)
+    app.register_blueprint(routes, url_prefix="/api")
+    return app
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)

@@ -1,4 +1,7 @@
 ghw-venv
+status.txt
+task.txt
+todo.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
