@@ -13,6 +13,7 @@ class User(TypedDict):
     skills: list[str]
     email: str
 
+# status: "started", "in-progress", "completed
 class Project(TypedDict):
     name: str
     description: str
@@ -20,6 +21,7 @@ class Project(TypedDict):
     created_at: str
     updated_at: str
 
+# status: "started", "in-progress", "completed
 class Task(TypedDict):
     project_id_ref: ObjectId
     name: str
@@ -29,6 +31,7 @@ class Task(TypedDict):
     created_at: str
     updated_at: str
 
+# status: "started", "in-progress", "completed
 class Issue(TypedDict):
     task_id_ref: ObjectId
     issue_tag: str
