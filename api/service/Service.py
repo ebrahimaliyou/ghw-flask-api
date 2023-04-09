@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 from api.model.Model import User, Project, Task, Issue
-from bson import ObjectId
+from bson import ObjectId, json_util
 from dotenv import load_dotenv
+
 import os
 from datetime import datetime
 
@@ -12,7 +13,7 @@ PASSWORD = os.getenv("PASSWORD")
 
 try:
     client = MongoClient(
-        "mongodb+srv://%s:%s@cluster0.yumdxcu.mongodb.net/?retryWrites=true&w=majority" % (USERNAME, PASSWORD))
+        "mongodb+srv://root:%s@cluster0.yumdxcu.mongodb.net/?retryWrites=true&w=majority" % PASSWORD)
     print("Connected to MongoDB")
 except Exception as e:
     print(e)
@@ -170,6 +171,20 @@ def get_issues_by_task_id(task_id: str):
 
 
 def get_project_completion_percentage(project_id):
-    tasks = get_tasks_by_project_id(project_id)
-    completed_tasks = tasks.filter(status='completed')
-    return completed_tasks.count() / tasks.count()
+    pipeline = [
+        {"$match": {"project_id_ref": ObjectId(project_id)}},
+        {"$group": {"_id": "$project_id_ref", "completed_tasks": {
+            "$sum": {"$cond": [{"$eq": ["$status", "completed"]}, 1, 0]}}}},
+        {"$project": {"_id": 0, "completed_tasks": 1}}
+    ]
+    completed_tasks = list(taskCollection.aggregate(pipeline))
+    pipeline = [
+        {"$match": {"project_id_ref": ObjectId(project_id)}},
+        {"$group": {"_id": "$project_id_ref", "total_tasks": {"$sum": 1}}},
+        {"$project": {"_id": 0, "total_tasks": 1}}
+    ]
+
+    total_tasks = list(taskCollection.aggregate(pipeline))
+    if len(completed_tasks) == 0 or len(total_tasks) == 0:
+        return 0
+    return round((completed_tasks[0]["completed_tasks"] / total_tasks[0]["total_tasks"]) * 100, 2)

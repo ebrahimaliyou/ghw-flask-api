@@ -39,6 +39,7 @@ def user(id):
 @routes.route("/projects/<id>")
 def project(id):
     project_id = id
+    print(project_id)
     if request.method == "GET":
         if project_id is None:
             page = int(request.args.get("page", 1))
@@ -49,6 +50,7 @@ def project(id):
         return json_util.dumps(project)
     elif request.method == "POST":
         project = request.get_json()
+        print(project)
         res = Service.create_project(project)
         return json_util.dumps(res)
     elif request.method == "PUT":
@@ -66,7 +68,7 @@ def project(id):
         return json_util.dumps(res)
 
 
-@routes.route("/tasks/<id>", methods=["GET", "POST", "PUT", "DELETE"], defaults={"id": None})
+@routes.route("/tasks/", methods=["GET", "POST", "PUT", "DELETE"], defaults={"id": None})
 @routes.route("/tasks/<id>")
 def task(id):
     task_id = id
@@ -76,7 +78,7 @@ def task(id):
             limit = int(request.args.get("limit", 10))
             tasks = Service.get_paginated_tasks(page, limit)
             return json_util.dumps(tasks)
-        if request.args.get("project_id"):
+        elif request.args.get("project_id"):
             project_id = request.args.get("project_id")
             tasks = Service.get_tasks_by_project_id(project_id)
             return json_util.dumps(tasks)
@@ -101,7 +103,7 @@ def task(id):
         return json_util.dumps(res)
 
 
-@routes.route("/issues/<id>", methods=["GET", "POST", "PUT", "DELETE"], defaults={"id": None})
+@routes.route("/issues/", methods=["GET", "POST", "PUT", "DELETE"], defaults={"id": None})
 @routes.route("/issues/<id>")
 def issue(id):
     issue_id = id
@@ -136,7 +138,7 @@ def issue(id):
         return json_util.dumps(res)
 
 
-@routes.route("/projectCompletion/<id>", methods=["GET"], defaults={"id": None})
+@routes.route("/projectCompletion/", methods=["GET"], defaults={"id": None})
 @routes.route("/projectCompletion/<id>")
 def projectCompletion(id):
     project_id = id
@@ -144,4 +146,4 @@ def projectCompletion(id):
         raise Exception("Project ID is required")
     projectCompletionPercentage = Service.get_project_completion_percentage(
         project_id)
-    return json_util.dumps(projectCompletionPercentage)
+    return str(projectCompletionPercentage)
